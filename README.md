@@ -1,6 +1,6 @@
 # Projetos de Sistemas Embarcados - EmbarcaTech 2025
 
-Autor: **(insira seu nome)**
+Autor: Pedro Henrique Tenorio de Magalhães de Oliveira
 
 Curso: Residência Tecnológica em Sistemas Embarcados
 
