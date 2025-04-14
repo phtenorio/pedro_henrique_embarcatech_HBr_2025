@@ -35,7 +35,10 @@ pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(01_contador_decrescente 01_contador_decrescente.c )
+add_executable(01_contador_decrescente 
+    01_contador_decrescente.c 
+    libs/display_oled/inc/ssd1306_i2c.c # Adiciona o arquivo fonte da biblioteca SSD1306
+)
 
 pico_set_program_name(01_contador_decrescente "01_contador_decrescente")
 pico_set_program_version(01_contador_decrescente "0.1")
@@ -47,11 +50,15 @@ pico_enable_stdio_usb(01_contador_decrescente 1)
 # Add the standard library to the build
 target_link_libraries(01_contador_decrescente
         pico_stdlib
-        hardware_timer)
+        hardware_timer
+        hardware_gpio
+        hardware_i2c # Adiciona suporte ao I2C
+)
 
-# Add the standard include files to the build
+# Add include directories for the project
 target_include_directories(01_contador_decrescente PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
+        libs/display_oled/inc # Adiciona o diretório de cabeçalhos da biblioteca SSD1306
 )
 
 # Add any user requested libraries
@@ -60,4 +67,3 @@ target_link_libraries(01_contador_decrescente
         )
 
 pico_add_extra_outputs(01_contador_decrescente)
-
