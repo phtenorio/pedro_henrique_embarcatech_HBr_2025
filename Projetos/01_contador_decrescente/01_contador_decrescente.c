@@ -89,24 +89,6 @@ void init_oled() {
     };
 
     calculate_render_area_buffer_length(&frame_area);
-
-    // Zera o display inteiro
-    uint8_t ssd[ssd1306_buffer_length];
-    memset(ssd, 0, ssd1306_buffer_length);
-    render_on_display(ssd, &frame_area);
-
-    // Mensagem inicial no display
-    char *text[] = {
-        "  Bem-vindos!   ",
-        "  Embarcatech   "
-    };
-
-    int y = 0;
-    for (uint i = 0; i < count_of(text); i++) {
-        ssd1306_draw_string(ssd, 5, y, text[i]);
-        y += 8;
-    }
-    render_on_display(ssd, &frame_area);
 }
 
 // Função para atualizar o display com os valores atuais
@@ -161,10 +143,7 @@ int main() {
     while (true) {
         if (button_a_ready) {
             button_a_ready = false;
-
-            if (countdown == 0) {
-                button_b_count = 0;
-            }
+            button_b_count = 0;
             countdown = 9;
         }
 
