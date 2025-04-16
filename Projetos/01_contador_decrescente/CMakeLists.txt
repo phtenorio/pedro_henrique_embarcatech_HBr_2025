@@ -37,7 +37,7 @@ pico_sdk_init()
 
 add_executable(01_contador_decrescente 
     01_contador_decrescente.c 
-    libs/display_oled/inc/ssd1306_i2c.c # Adiciona o arquivo fonte da biblioteca SSD1306
+    libs/display_oled/ssd1306.c
 )
 
 pico_set_program_name(01_contador_decrescente "01_contador_decrescente")
@@ -52,13 +52,13 @@ target_link_libraries(01_contador_decrescente
         pico_stdlib
         hardware_timer
         hardware_gpio
-        hardware_i2c # Adiciona suporte ao I2C
+        hardware_i2c 
 )
 
 # Add include directories for the project
 target_include_directories(01_contador_decrescente PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
-        libs/display_oled/inc # Adiciona o diretório de cabeçalhos da biblioteca SSD1306
+        libs/display_oled
 )
 
 # Add any user requested libraries

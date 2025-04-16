@@ -4,8 +4,7 @@
 #include "hardware/timer.h"
 #include <string.h>
 #include "hardware/i2c.h"
-#include "ssd1306_i2c.h"
-#include "ssd1306.h"
+#include "libs/display_oled/ssd1306.h"
 
 // ====================== Variáveis Globais ======================
 #define BUTTON_A 5 // Botão A
@@ -22,15 +21,13 @@ volatile bool passed_1s = false;    // Indica que 1 segundo passou
 volatile bool button_a_ready = false; // Indica que o botão A está pronto para ser processado
 volatile bool button_b_ready = false; // Indica que o botão B está pronto para ser processado
 
-// Configuração do display OLED
-#define SSD1306_WIDTH 128
-#define SSD1306_HEIGHT 64
+// Display OLED
+static ssd1306_t display_oled;
+
+// // Configuração do I2C do display
 #define I2C_PORT i2c1
 #define I2C_SDA_PIN 14
 #define I2C_SCL_PIN 15
-#define OLED_I2C_ADDRESS 0x3C
-
-ssd1306_t oled;
 
 // ========================= Funções ==========================
 
@@ -71,53 +68,32 @@ bool timer_callback(repeating_timer_t *rt) {
 
 // Função para inicializar o display OLED
 void init_oled() {
-    i2c_init(I2C_PORT, ssd1306_i2c_clock * 1000); // Inicializa I2C com frequência de 400kHz
+    i2c_init(I2C_PORT, 400 * 1000); // Inicializa I2C com frequência de 400kHz
     gpio_set_function(I2C_SDA_PIN, GPIO_FUNC_I2C);
     gpio_set_function(I2C_SCL_PIN, GPIO_FUNC_I2C);
     gpio_pull_up(I2C_SDA_PIN);
     gpio_pull_up(I2C_SCL_PIN);
 
-    // Processo de inicialização completo do OLED SSD1306
-    ssd1306_init();
-
-    // Preparar área de renderização para o display (ssd1306_width pixels por ssd1306_n_pages páginas)
-    struct render_area frame_area = {
-        start_column : 0,
-        end_column : ssd1306_width - 1,
-        start_page : 0,
-        end_page : ssd1306_n_pages - 1
-    };
-
-    calculate_render_area_buffer_length(&frame_area);
+    // Instancia, inicializa e limpa o display OLED
+    display_oled.external_vcc = false;
+    ssd1306_init(&display_oled, 128, 64, 0x3C, i2c1);
 }
 
 // Função para atualizar o display com os valores atuais
 void update_oled_display() {
-    // Define a área de renderização para todo o display
-    struct render_area frame_area = {
-        start_column : 0,
-        end_column : ssd1306_width - 1,
-        start_page : 0,
-        end_page : ssd1306_n_pages - 1
-    };
+    char countdown_str[20];
+    char count_str[20];
 
-    calculate_render_area_buffer_length(&frame_area);
+     // Zera o buffer do display antes de desenhar novos dados
+    ssd1306_clear(&display_oled);
 
-    // Zera o buffer do display antes de desenhar novos dados
-    uint8_t ssd[ssd1306_buffer_length];
-    memset(ssd, 0, ssd1306_buffer_length);
-
-    // Desenha as informações no buffer
-    char buffer[32];
-    
-    snprintf(buffer, sizeof(buffer), "Contador: %d", countdown);
-    ssd1306_draw_string(ssd, 0, 0, buffer);
-
-    snprintf(buffer, sizeof(buffer), "Cliques B: %d", button_b_count);
-    ssd1306_draw_string(ssd, 0, 16, buffer);
-
-    // Renderiza o buffer no display
-    render_on_display(ssd, &frame_area);
+    sprintf(countdown_str, "Tempo: %d", countdown);
+    sprintf(count_str, "Cliques: %d", button_b_count);
+    // ssd1306_draw_string(&display_oled, 0, 5, 2, "Contador:");
+    ssd1306_draw_string(&display_oled, 20, 5, 2, countdown_str);
+    // ssd1306_draw_string(&display_oled, 0, 35, 2, "");
+    ssd1306_draw_string(&display_oled, 5, 35, 2, count_str);
+    ssd1306_show(&display_oled);
 }
 
 // ===================== Programa Principal =====================
