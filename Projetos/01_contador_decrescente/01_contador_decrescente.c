@@ -89,9 +89,7 @@ void update_oled_display() {
 
     sprintf(countdown_str, "Tempo: %d", countdown);
     sprintf(count_str, "Cliques: %d", button_b_count);
-    // ssd1306_draw_string(&display_oled, 0, 5, 2, "Contador:");
     ssd1306_draw_string(&display_oled, 20, 5, 2, countdown_str);
-    // ssd1306_draw_string(&display_oled, 0, 35, 2, "");
     ssd1306_draw_string(&display_oled, 5, 35, 2, count_str);
     ssd1306_show(&display_oled);
 }
